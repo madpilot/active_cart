@@ -1,0 +1,24 @@
+== ActiveCart
+
+ActiveCart is a Shopping Cart framework, it's not a fullyfledged cart, so you will need to do some stuff to get it to work.
+
+The cart system has a storage engine, which means you aren't bound to a particular database (Eventually there will be different engines already built to get you started
+
+== Installation
+  gem install active_cart
+
+  require 'rubygems'
+  require 'active_cart'
+
+  @cart = ActiveCart::Cart.setup(MyStorageEngine.new) do |t|
+    t << ShippingOrderTotal.new
+    t << GstOrderTotal.new
+  end
+
+In this example the ShippingOrderTotal and GstOrderTotal have been created by the developer and follow the OrderTotal interface.
+
+== Todo
+
+Write some actual Storage Engines and OrderTotal examples, and finish the docs.
+
+Copyright (c) 2010 Myles Eftos (myles@madpilot.com.au), released under the MIT license
