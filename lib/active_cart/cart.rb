@@ -16,13 +16,12 @@ module ActiveCart
   #   @cart.check_payment! # transistions from checkout to verifying_payment
   #   @cart.payment_successful! # transitions from verifying_payment to completed
   #   @cart.payment_failed! # transitions from verifying_payment to failed
-  #   @cart.continue_shopping # transitions from checkout or verifying_payment to shopping
+  #   @cart.continue_shopping! # transitions from checkout or verifying_payment to shopping
   #
   class Cart
     attr_accessor :storage_engine, :order_total_calculators, :customer
     include Enumerable
     
-    # The method MUST be called before you call instance, otherwise you will receive and StandardError
     # You need to supply a storage engine. An optional block can be given which allows you to add order total items.
     #
     # A typical initialization block might look like this
