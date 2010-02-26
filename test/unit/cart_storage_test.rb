@@ -7,6 +7,65 @@ class CartStorageTest < Test::Unit::TestCase
       @cart = ActiveCart::Cart.new(@cart_storage_engine)
     end
 
+    context 'states' do
+      context 'checkout' do
+        should 'default to shopping' do
+          assert_equal :shopping, @cart_storage_engine.state
+        end
+
+        should 'transition from shopping to checkout' do
+          assert_nothing_raised do
+            @cart_storage_engine.checkout!
+          end
+          assert_equal :checkout, @cart_storage_engine.state
+        end
+
+        should 'transition from checkout to check_payment' do
+          @cart_storage_engine.checkout!
+          assert_nothing_raised do
+            @cart_storage_engine.check_payment!
+          end
+          assert_equal :verifying_payment, @cart_storage_engine.state
+        end
+
+        should 'transition from verifying_payment to completed' do
+          @cart_storage_engine.checkout!
+          @cart_storage_engine.check_payment!
+          assert_nothing_raised do
+            @cart_storage_engine.payment_successful!
+          end
+          assert_equal :completed, @cart_storage_engine.state
+        end
+
+        should 'transition from verifying_payment to shopping' do
+          @cart_storage_engine.checkout!
+          @cart_storage_engine.check_payment!
+          assert_nothing_raised do
+            @cart_storage_engine.continue_shopping!
+          end
+          assert_equal :shopping, @cart_storage_engine.state
+        end
+
+        should 'transition from verifying_payment to checkout' do
+          @cart_storage_engine.checkout!
+          @cart_storage_engine.check_payment!
+          assert_nothing_raised do
+            @cart_storage_engine.checkout!
+          end
+          assert_equal :checkout, @cart_storage_engine.state
+        end
+
+        should 'transition from verifying_payment to failed' do
+          @cart_storage_engine.checkout!
+          @cart_storage_engine.check_payment!
+          assert_nothing_raised do
+            @cart_storage_engine.payment_failed!
+          end
+          assert_equal :failed, @cart_storage_engine.state
+        end
+      end
+    end
+
     context 'sub_total' do
       setup do
         @item_1 = TestItem.new(1)

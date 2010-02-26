@@ -14,6 +14,7 @@ begin
     gem.homepage = "http://gemcutter.org/gems/active-cart"
     gem.authors = ["Myles Eftos"]
     gem.version = File.exist?('VERSION') ? File.read('VERSION') : ""
+    gem.add_dependency 'aasm'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

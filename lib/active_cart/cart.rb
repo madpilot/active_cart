@@ -9,10 +9,19 @@ module ActiveCart
   # The Cart object delegates a number of Array methods:
   # :[], :<<, :[]=, :at, :clear, :collect, :map, :delete, :delete_at, :each, :each_index, :empty?, :eql?, :first, :include?, :index, :inject, :last, :length, :pop, :push, :shift, :size, :unshift
   #
+  # The CartEngine object uses a state machine to track the state of the cart. The default states are: shopping, checkout, verifying_payment, completed, failed. It exposed the following transitions:
+  # continue_shopping, checkout, check_payment, payment_successful, payment_failed
+  #
+  #   @cart.checkout! # transitions from shopping or verifying_payment to checkout
+  #   @cart.check_payment! # transistions from checkout to verifying_payment
+  #   @cart.payment_successful! # transitions from verifying_payment to completed
+  #   @cart.payment_failed! # transitions from verifying_payment to failed
+  #   @cart.continue_shopping # transitions from checkout or verifying_payment to shopping
+  #
   class Cart
     attr_accessor :storage_engine, :order_total_calculators, :customer
     include Enumerable
-
+    
     # The method MUST be called before you call instance, otherwise you will receive and StandardError
     # You need to supply a storage engine. An optional block can be given which allows you to add order total items.
     #
@@ -71,7 +80,9 @@ module ActiveCart
     #   @cart[1].size # => 4
     #
     def add_to_cart(item, quantity = 1)
+      return false unless item.before_add_to_cart(quantity) if item.respond_to?(:before_add_to_cart)
       @storage_engine.add_to_cart(item, quantity)
+      item.after_add_to_cart(quantity) if item.respond_to?(:after_add_to_cart)
     end
 
     # Removes an item from the cart (identified by the id of the item). If the supplied quantity is greater than equal to the number in the cart, the item will be removed, otherwise the quantity will simply be decremented by the supplied amount
@@ -84,13 +95,46 @@ module ActiveCart
     #   @cart[0] # => nil
     #
     def remove_from_cart(item, quantity = 1)
+      return false unless item.before_remove_from_cart(quantity) if item.respond_to?(:before_remove_from_cart)
       @storage_engine.remove_from_cart(item, quantity)
+      item.after_remove_from_cart(quantity) if item.respond_to?(:after_remove_from_cart)
     end
     
     # Returns the total of the cart. This includes all the order_total calculations
     #
     def total
       sub_total + order_total_calculators.total
+    end
+
+    # Returns the current state of the cart storage engine
+    #
+    def state
+      storage_engine.state
+    end
+
+    # Transitions to the cart's :shopping state
+    def continue_shopping!
+      storage_engine.continue_shopping!
+    end
+
+    # Transitions to the cart's :checkout state
+    def checkout!
+      storage_engine.checkout!
+    end
+
+    # Transitions to the cart's :verifying_payment state
+    def check_payment!
+      storage_engine.check_payment!
+    end
+
+    # Transitions to the cart's :successful state
+    def payment_successful!
+      storage_engine.payment_successful!
+    end
+
+    # Transitions to the cart's :failed state
+    def payment_failed!
+      storage_engine.payment_failed!
     end
   end
 end
