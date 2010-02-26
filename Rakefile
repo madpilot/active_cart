@@ -13,7 +13,7 @@ begin
     gem.email = "myles@madpilot.com.au"
     gem.homepage = "http://gemcutter.org/gems/active-cart"
     gem.authors = ["Myles Eftos"]
-    gem.version = "0.0.1"
+    gem.version = File.exist?('VERSION') ? File.read('VERSION') : ""
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
@@ -49,7 +49,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "saasu_connect #{version}"
+  rdoc.title = "active_cart #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

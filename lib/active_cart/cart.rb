@@ -8,54 +8,44 @@ module ActiveCart
   #
   # The Cart object delegates a number of Array methods:
   # :[], :<<, :[]=, :at, :clear, :collect, :map, :delete, :delete_at, :each, :each_index, :empty?, :eql?, :first, :include?, :index, :inject, :last, :length, :pop, :push, :shift, :size, :unshift
+  #
   class Cart
     attr_accessor :storage_engine, :order_total_calculators, :customer
-    include Singleton
     include Enumerable
-
-    #nodoc
-    def self.instance_with_setup_check
-      raise StandardError, 'Please call setup first' unless @setup_called
-      instance_without_setup_check
-    end
 
     # The method MUST be called before you call instance, otherwise you will receive and StandardError
     # You need to supply a storage engine. An optional block can be given which allows you to add order total items.
     #
     # A typical initialization block might look like this
     #
-    # @cart = Cart.setup(MyAwesomeStorageEngine.new) do |o|
+    # @cart = Cart.new(MyAwesomeStorageEngine.new) do |o|
     #   o << ShippingOrderTotal.new
     #   o << GstOrderTotal.new
     # end
-    def self.setup(storage_engine, &block)
-      @setup_called = true
-      instance = self.instance_without_setup_check
-      instance.storage_engine = storage_engine
-      instance.order_total_calculators = OrderTotalCollection.new(self)
+    #
+    def initialize(storage_engine, &block)
+      @storage_engine = storage_engine
+      @order_total_calculators = OrderTotalCollection.new(self)
 
       if block_given?
-        yield instance.order_total_calculators
+        yield order_total_calculators
       end
-      instance
-    end
-
-    class << self
-      alias_method :instance_without_setup_check, :instance
-      alias_method :instance, :instance_with_setup_check
     end
 
     extend Forwardable
     # Storage Engine Array delegators
     def_delegators :@storage_engine, :[], :<<, :[]=, :at, :clear, :collect, :map, :delete, :delete_at, :each, :each_index, :empty?, :eql?, :first, :include?, :index, :inject, :last, :length, :pop, :push, :shift, :size, :unshift
     
-    # Returns a unique id for the invoice. It's upto the storage engine to generate and track these numbers 
+    # Returns a unique id for the invoice. It's upto the storage engine to generate and track these numbers
+    #
     def invoice_id
       @storage_engine.invoice_id
     end
 
-    # Returns the number of items in the cart. Each different item in the cart may have different quantities, and this method will return the sum of that.
-    # For example if the first item has a quantity of 2 and the second has a quantity of 3, this method will return 5
+    # Returns the sub-total of all the items in the cart. Usually returns a float.
+    #
+    # @cart.sub_total # => 100.00
+    #
     def quantity
       @storage_engine.quantity
     end
@@ -65,17 +55,40 @@ module ActiveCart
       @storage_engine.sub_total
     end
 
-    # Adds an item (or a quantity of that item) to the cart. If the item already exists, the internal quantity will be incremented by the quantity paramater
+    # Adds an item to the cart. If the item already exists in the cart (identified by the id of the item), then the quantity will be increased but the supplied quantity (default: 1)
+    #
+    # @cart.add_to_cart(item, 5)
+    # @cart.quantity # => 5
+    #
+    # @cart.add_to_cart(item, 2)
+    # @cart.quantity # => 7
+    # @cart[0].size # => 7
+    # @cart[1] # => nil
+    #
+    # @cart.add_to_cart(item_2, 4)
+    # @cart.quantity => 100
+    # @cart[0].size # => 7
+    # @cart[1].size # => 4
+    #
     def add_to_cart(item, quantity = 1)
       @storage_engine.add_to_cart(item, quantity)
     end
 
-    # Removes an item (or a quantity of that item) from the cart. If final total is 0, the item will be removed from the cart
+    # Removes an item from the cart (identified by the id of the item). If the supplied quantity is greater than equal to the number in the cart, the item will be removed, otherwise the quantity will simply be decremented by the supplied amount
+    #
+    # @cart.add_to_cart(item, 5)
+    # @cart[0].quantity # => 5
+    # @cart.remove_from_cart(item, 3)
+    # @cart[0].quantity # => 2
+    # @cart.remove_from_cart(item, 2)
+    # @cart[0] # => nil
+    #
     def remove_from_cart(item, quantity = 1)
       @storage_engine.remove_from_cart(item, quantity)
     end
     
-    # Returns the total of the cart. THis includes all the order_total calculations
+    # Returns the total of the cart. This includes all the order_total calculations
+    #
     def total
       sub_total + order_total_calculators.total
     end

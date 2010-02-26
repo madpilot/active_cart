@@ -8,5 +8,5 @@ require 'active_cart/order_total_collection'
 require 'active_cart/cart'
 
 module ActiveCart
-  VERSION = "0.0.1"
+  VERSION = File.exist?('VERSION') ? File.read('VERSION') : ""
 end

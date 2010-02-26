@@ -4,7 +4,7 @@ class OrderTotalCollectionTest < Test::Unit::TestCase
   context '' do
     setup do
       @cart_storage_engine = TestCartStorage.new
-      @cart = ActiveCart::Cart.setup(@cart_storage_engine)
+      @cart = ActiveCart::Cart.new(@cart_storage_engine)
       @collection = ActiveCart::OrderTotalCollection.new(@cart)
     end
 

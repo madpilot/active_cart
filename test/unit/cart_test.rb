@@ -2,17 +2,10 @@ require 'test_helper'
 
 class CartTest < Test::Unit::TestCase
   context '' do
-    should 'raise exception if instance is called without calling setup first' do
-      assert_raise StandardError do
-        ActiveCart::Cart.instance_variable_set(:@setup_called, false)
-        ActiveCart::Cart.instance
-      end
-    end
-
     context 'after setup' do
       setup do
         @cart_storage_engine = TestCartStorage.new
-        @cart = ActiveCart::Cart.setup(@cart_storage_engine)
+        @cart = ActiveCart::Cart.new(@cart_storage_engine)
       end
 
       context 'delegate to cart storage' do
@@ -156,7 +149,7 @@ class CartTest < Test::Unit::TestCase
           @total_2 = TestOrderTotal.new(20, true)
           
           @cart_storage_engine = TestCartStorage.new
-          @cart = ActiveCart::Cart.setup(@cart_storage_engine) do |o|
+          @cart = ActiveCart::Cart.new(@cart_storage_engine) do |o|
             o << @total_1
             o << @total_2
           end
