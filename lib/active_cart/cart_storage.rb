@@ -11,7 +11,7 @@ module ActiveCart
 
     # Returns the sub-total of all the items in the cart. Usually returns a float.
     #
-    # @cart.sub_total # => 100.00
+    #   @cart.sub_total # => 100.00
     #
     def sub_total
       inject(0) { |t, item| t + (item.quantity * item.price)  }
@@ -25,18 +25,18 @@ module ActiveCart
 
     # Adds an item to the cart. If the item already exists in the cart (identified by the id of the item), then the quantity will be increased but the supplied quantity (default: 1)
     #
-    # @cart.add_to_cart(item, 5)
-    # @cart.quantity # => 5
+    #   @cart.add_to_cart(item, 5)
+    #   @cart.quantity # => 5
     #
-    # @cart.add_to_cart(item, 2)
-    # @cart.quantity # => 7
-    # @cart[0].quantity # => 7
-    # @cart[1] # => nil
+    #   @cart.add_to_cart(item, 2)
+    #   @cart.quantity # => 7
+    #   @cart[0].quantity # => 7
+    #   @cart[1] # => nil
     #
-    # @cart.add_to_cart(item_2, 4)
-    # @cart.quantity => 100
-    # @cart[0].quantity # => 7
-    # @cart[1].quantity # => 4
+    #   @cart.add_to_cart(item_2, 4)
+    #   @cart.quantity => 100
+    #   @cart[0].quantity # => 7
+    #   @cart[1].quantity # => 4
     #
     def add_to_cart(item, quantity = 1)
       if self.include?(item)
@@ -50,12 +50,12 @@ module ActiveCart
 
     # Removes an item from the cart (identified by the id of the item). If the supplied quantity is greater than equal to the number in the cart, the item will be removed, otherwise the quantity will simply be decremented by the supplied amount
     #
-    # @cart.add_to_cart(item, 5)
-    # @cart[0].quantity # => 5
-    # @cart.remove_from_cart(item, 3)
-    # @cart[0].quantity # => 2
-    # @cart.remove_from_cart(item, 2)
-    # @cart[0] # => nil
+    #   @cart.add_to_cart(item, 5)
+    #   @cart[0].quantity # => 5
+    #   @cart.remove_from_cart(item, 3)
+    #   @cart[0].quantity # => 2
+    #   @cart.remove_from_cart(item, 2)
+    #   @cart[0] # => nil
     #
     def remove_from_cart(item, quantity = 1)
       if self.include?(item)

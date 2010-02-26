@@ -7,7 +7,7 @@ module ActiveCart
     
     # Returns a boolean depending if the order total is active in this particular cart
     #
-    # @order_total.active? # => true
+    #   @order_total.active? # => true
     #
     def active?
       @active || false
@@ -15,11 +15,11 @@ module ActiveCart
 
     # Make a particular order_total active
     #
-    #  @order_total.active = true
-    #  @order_total.active? # => true
+    #   @order_total.active = true
+    #   @order_total.active? # => true
     #
-    #  @order_total.active = false
-    #  @order_total.active? # => falese
+    #   @order_total.active = false
+    #   @order_total.active? # => falese
     #
     def active=(active)
       @active = active
@@ -29,7 +29,7 @@ module ActiveCart
     #
     # This must be overriden in the mixee class, otherwise it will throw a NotImplementedError
     #
-    # @order.price(@cart) => 2
+    #   @order.price(@cart) => 2
     #
     def price(cart)
       raise NotImplementedError
@@ -39,7 +39,8 @@ module ActiveCart
     #
     # This must be overriden in the mixee class, otherwise it will throw a NotImplementedError
     #
-    # @order.name # => 'My awesome order total class'
+    #   @order.name # => 'My awesome order total class'
+    #
     def name
       raise NotImplementedError
     end
@@ -48,7 +49,7 @@ module ActiveCart
     #
     # This must be overriden in the mixee class, otherwise it will throw a NotImplementedError
     #
-    # @order.description # => "This example order class doesn't do much"
+    #   @order.description # => "This example order class doesn't do much"
     #
     def description
       raise NotImplementedError

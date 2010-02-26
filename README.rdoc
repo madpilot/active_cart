@@ -19,6 +19,6 @@ In this example the ShippingOrderTotal and GstOrderTotal have been created by th
 
 == Todo
 
-Write some actual Storage Engines and OrderTotal examples, and finish the docs.
+Write some actual Storage Engines and OrderTotal examples.
 
 Copyright (c) 2010 Myles Eftos (myles@madpilot.com.au), released under the MIT license
