@@ -7,7 +7,7 @@ begin
   require 'jeweler'
   
   Jeweler::Tasks.new do |gem|
-    gem.name = "active-cart"
+    gem.name = "active_cart"
     gem.summary = "Shopping Cart framework gem. Supports 'storage engines' and order total plugins"
     gem.description = "You can use active-cart as the basis of a shopping cart system. It's definately not complete, you need to build a website around it."
     gem.email = "myles@madpilot.com.au"
