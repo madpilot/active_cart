@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CartTest < Test::Unit::TestCase
+class CartTest < ActiveSupport::TestCase
   context '' do
     context 'after setup' do
       setup do

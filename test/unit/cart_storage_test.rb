@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CartStorageTest < Test::Unit::TestCase
+class CartStorageTest < ActiveSupport::TestCase
   context '' do
     setup do
       @cart_storage_engine = TestCartStorage.new

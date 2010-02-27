@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ItemTest < Test::Unit::TestCase
+class ItemTest < ActiveSupport::TestCase
   context '' do
     should '' do
       assert true

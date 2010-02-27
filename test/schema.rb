@@ -1,0 +1,21 @@
+ActiveRecord::Schema.define :version => 0 do
+  create_table :carts, :force => true do |t|
+    t.string :invoice_id
+    t.string :state
+  end
+
+  create_table :cart_items, :force => true do |t|
+    t.integer :cart_id
+    t.string :name
+    t.integer :quantity
+    t.float :price
+    t.integer :original_id
+    t.string :original_type
+  end
+
+  create_table :order_totals, :force => true do |t|
+    t.integer :cart_id
+    t.name :name
+    t.float :total
+  end
+end

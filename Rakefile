@@ -20,6 +20,8 @@ begin
     gem.add_development_dependency 'redgreen'
     gem.add_development_dependency 'shoulda'
     gem.add_development_dependency 'mocha'
+    gem.add_development_dependency 'machinist'
+    gem.add_development_dependency 'faker'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
