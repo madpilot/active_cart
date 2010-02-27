@@ -19,8 +19,27 @@ In this example the ShippingOrderTotal and GstOrderTotal have been created by th
 
 For information about the API and interfase, checkout the documentation: http://rdoc.info/projects/madpilot/active_cart
 
-== Todo
+== Sample using the contrived Memory demo classes in irb
 
-Write some actual Storage Engines and OrderTotal examples.
+  >> require 'rubygems'
+  => true
+  >> require 'active_cart'
+  => true
+  >> include ActiveCart
+  => Object
+  >> c = Cart.new(ActiveCart::StorageEngines::Memory.new)
+  => #<ActiveCart::Cart:0xb7a697a0 @order_total_calculators=[], @storage_engine=[]>
+  >> c.add_to_cart(ActiveCart::Items::MemoryItem.new(1, "Test Item", 10))
+  => nil
+  >> c.add_to_cart(ActiveCart::Items::MemoryItem.new(1, "Test Item", 10))
+  => nil
+  >> c[0]
+  => #<ActiveCart::Items::MemoryItem:0xb7a63170 @price=10, @name="Test Item", @quantity=2, @id=1>
+  >> c.total
+  => 20
+
+== TODO
+
+Write an ActiveMerchant acts_as_ plugin. Write an interface to MondoDB or CouchDB (or both). Write a reference rails engine that implements a working shopping cart site
 
 Copyright (c) 2010 Myles Eftos (myles@madpilot.com.au), released under the MIT license
