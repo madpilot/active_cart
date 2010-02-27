@@ -9,12 +9,17 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "active_cart"
     gem.summary = "Shopping Cart framework gem. Supports 'storage engines' and order total plugins"
-    gem.description = "You can use active-cart as the basis of a shopping cart system. It's definately not complete, you need to build a website around it."
+    gem.description = "You can use active_cart as the basis of a shopping cart system. It's not a shopping cart application - it's a shopping cart framework."
     gem.email = "myles@madpilot.com.au"
-    gem.homepage = "http://gemcutter.org/gems/active-cart"
+    gem.homepage = "http://gemcutter.org/gems/active_cart"
     gem.authors = ["Myles Eftos"]
     gem.version = File.exist?('VERSION') ? File.read('VERSION') : ""
+    
     gem.add_dependency 'aasm'
+
+    gem.add_development_dependency 'redgreen'
+    gem.add_development_dependency 'shoulda'
+    gem.add_development_dependency 'mocha'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

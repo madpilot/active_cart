@@ -17,6 +17,8 @@ The cart system has a storage engine, which means you aren't bound to a particul
 
 In this example the ShippingOrderTotal and GstOrderTotal have been created by the developer and follow the OrderTotal interface.
 
+For information about the API and interfase, checkout the documentation: http://rdoc.info/projects/madpilot/active_cart
+
 == Todo
 
 Write some actual Storage Engines and OrderTotal examples.
