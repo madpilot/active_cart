@@ -9,7 +9,7 @@ require 'cart_storage'
 require 'order_total'
 require 'order_total_collection'
 require 'cart'
-require 'acts_as_cart' if (Kernel.const_defined?('RAILS_ENV') || Kernel.const_defined?('Rails'))
+require 'acts_as_cart' if defined?(ActiveRecord)
 
 require 'storage_engines/memory'
 require 'items/memory_item'
