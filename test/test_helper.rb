@@ -34,6 +34,7 @@ require 'active_cart/acts_as_cart'
 load(File.dirname(__FILE__) + '/schema.rb')
 
 require 'fixtures/cart'
+require 'fixtures/item'
 require 'fixtures/cart_item'
 require 'fixtures/order_total'
 require 'blueprints'

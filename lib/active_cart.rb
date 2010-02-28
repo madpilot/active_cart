@@ -11,6 +11,8 @@ require 'order_total_collection'
 require 'cart'
 require 'acts_as_cart' if defined?(ActiveRecord)
 
+require 'exceptions/out_of_stock'
+
 require 'storage_engines/memory'
 require 'items/memory_item'
 

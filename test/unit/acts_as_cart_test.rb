@@ -350,5 +350,114 @@ class ActsAsCartTest < ActiveSupport::TestCase
         end
       end
     end
+
+    context 'add to cart' do
+      should 'add an item to the cart if the cart is empty' do
+        assert @cart.empty?
+        item = Item.make
+        @cart.add_to_cart(item)
+        assert_equal 1, @cart.size
+        assert_equal 1, @cart[0].quantity
+        assert_equal 1, @cart.quantity
+        assert_equal CartItem, @cart[0].class
+        assert_equal item.id, @cart[0].original.id
+      end
+
+      should 'increase the item quantity if the same item is added to the cart again' do
+        assert @cart.empty?
+        item = Item.make
+        @cart.add_to_cart(item)
+        assert_equal 1, @cart.size
+        assert_equal 1, @cart[0].quantity
+
+        item_2 = Item.find(item.id) # Has the same id, is the same as item
+        @cart.add_to_cart(item_2)
+        assert_equal 1, @cart.size
+        assert_equal 2, @cart[0].quantity
+        assert_equal 2, @cart.quantity
+        assert_equal CartItem, @cart[0].class
+        assert_equal item.id, @cart[0].original.id
+      end
+
+      should 'increase the item quantity by the supplied number if the same item is add to the cart again and a quantity is supplied' do
+        assert @cart.empty?
+        item = Item.make
+        @cart.add_to_cart(item)
+        assert_equal 1, @cart.size
+        assert_equal 1, @cart[0].quantity
+
+        item_2 = Item.find(item.id) # Has the same id, is the same as item
+        @cart.add_to_cart(item_2, 10)
+        assert_equal 1, @cart.size
+        assert_equal 11, @cart[0].quantity
+        assert_equal 11, @cart.quantity
+      end
+
+      should 'add another item to the cart' do
+        assert @cart.empty?
+        item = Item.make
+        @cart.add_to_cart(item)
+        assert_equal 1, @cart.size
+        assert_equal 1, @cart[0].quantity
+
+        item_2 = Item.make
+        @cart.add_to_cart(item_2, 10)
+        assert_equal 2, @cart.size
+        assert_equal 1, @cart[0].quantity
+        assert_equal 10, @cart[1].quantity
+        assert_equal 11, @cart.quantity
+        assert_equal CartItem, @cart[0].class
+        assert_equal item.id, @cart[0].original.id
+        assert_equal CartItem, @cart[1].class
+        assert_equal item_2.id, @cart[1].original.id
+      end
+    end
+
+    context 'remove_from_cart' do
+      should 'remove the quantity supplied from the cart' do
+        item = Item.make
+        @cart.add_to_cart(item, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+
+        @cart.remove_from_cart(item)
+        assert_equal 1, @cart.size
+        assert_equal 9, @cart.quantity
+      end
+
+      should 'remove the item from the cart if the quantity to be removed is equal to the number in cart' do
+        item = Item.make
+        @cart.add_to_cart(item, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+
+        @cart.remove_from_cart(item, 10)
+        assert_equal 0, @cart.size
+      end
+
+      should 'remove the item from the cart if the quantity to be removed is greater than the number in cart' do
+        item = Item.make
+        @cart.add_to_cart(item, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+
+        @cart.remove_from_cart(item, 11)
+        assert_equal 0, @cart.size
+
+        assert_not_nil Item.find(item.id)
+      end
+
+      should "simply return if the item doesn't exist in the cart" do
+        item = Item.make
+        @cart.add_to_cart(item, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+
+        item_2 = Item.make
+        @cart.remove_from_cart(item_2, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+      end
+    end
   end
 end

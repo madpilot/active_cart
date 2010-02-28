@@ -5,6 +5,11 @@ ActiveRecord::Schema.define :version => 0 do
     t.string :dummy # Not needed in real carts - used sa a dummy field for testing
   end
 
+  create_table :items, :force => true do |t|
+    t.string :name
+    t.float :price
+  end
+
   create_table :cart_items, :force => true do |t|
     t.integer :cart_id
     t.string :name

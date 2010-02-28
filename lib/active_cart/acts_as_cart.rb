@@ -13,10 +13,12 @@ module ActiveCart
       module ClassMethods
         # acts_as_cart - Turns an ActiveRecord model in to a cart. It can take a hash of options
         #
-        # state_column: The database column that stores the persistent state machine state. Default: state
-        # invoice_id_column: The column that stores the invoice id. Default: invoice_id
-        # cart_items: The model that represents the items for this cart. Is associated as a has_many. Default: cart_items
-        # order_totals: The model that represents order totals for this cart. It is associated as a has_many. Default: order_totals
+        #   state_column: The database column that stores the persistent state machine state. Default: state
+        #   invoice_id_column: The column that stores the invoice id. Default: invoice_id
+        #   cart_items: The model that represents the items for this cart. Is associated as a has_many. Default: cart_items
+        #   order_totals: The model that represents order totals for this cart. It is associated as a has_many. Default: order_totals
+        #
+        # Example
         #
         #   class Cart < ActiveModel::Base
         #     acts_as_cart
@@ -25,6 +27,14 @@ module ActiveCart
         # The only two columns that are required for a cart model are the state_column and invoice_id_column
         #
         # You can create custom acts_as_state_machine (aasm) states and events after declaring acts_as_cart
+        #
+        # NOTE: this is a STORAGE ENGINE, so you need to create it (by finding by id) then pass the result in to ActiveCart::Cart.new. It might look something like this
+        # (Most likely in ApplicationController):
+        #
+        #   if session[:cart_id]
+        #     engine = Cart.find(session[:cart_id])
+        #     @cart = ActiveCart.new(engine) if engine
+        #   end
         #
         def acts_as_cart(options = {})
           cattr_accessor :aac_config
@@ -42,12 +52,45 @@ module ActiveCart
             #include AASM::Persistence::ActiveRecordPersistence
             include ActiveCart::CartStorage
 
+            #:nodoc
             def invoice_id
               read_attribute(self.aac_config[:invoice_id_column])
             end
             
+            #:nodoc
             def state
               read_attribute(self.aac_config[:state_column])
+            end
+
+            #:nodoc
+            def find_cart_item(item)
+              self.send(:cart_items).find(:first, :conditions => [ 'original_id = ? AND original_type = ?', item.id, item.class.to_s ])
+            end
+
+            #:nodoc
+            def add_to_cart(item, quantity = 1)
+              cart_item = find_cart_item(item)
+              if cart_item
+                cart_item.quantity += quantity
+                cart_item.save!
+              else
+                cart_item = self.send(:cart_items).create!(self.aac_config[:cart_items].to_s.classify.constantize.new_from_item(item).attributes.merge(:quantity => quantity, :original_id => item.id, :original_type => item.class.to_s))
+              end
+              self.reload 
+            end
+
+            #:nodoc
+            def remove_from_cart(item, quantity = 1)
+              cart_item = find_cart_item(item)
+              if cart_item
+                if cart_item.quantity - quantity > 0
+                  cart_item.quantity = cart_item.quantity - quantity
+                  cart_item.save!
+                else
+                  cart_item.destroy
+                end
+              end
+              self.reload 
             end
           end
          
@@ -79,6 +122,8 @@ module ActiveCart
         # rendering an invoice (or general display), but it's probably easier to just duplicate the fields. The cart_items will also require a cart_id and a quantity field
         # acts_as_cart uses the 'original' polymorphic attribute to store a reference to the original Item object. The compound attribute gets nullified if the original Item gets
         # deleted.
+        #
+        # When adding an item to a cart, you should pass in the actual concrete item, not the cart_item - the model will take care of the conversion. 
         #
         # For complex carts with multiple item types, you will probably need to use STI, as it's basically impossible to use a polymorphic relationship (If someone can
         # suggest a better way, I'm all ears). That said, there is no easy way to model complex carts, so I'll leave this as an exercise for the reader.
@@ -131,6 +176,16 @@ module ActiveCart
             def price
               read_attribute(self.aaci_config[:price_column])
             end
+          end
+          
+          # Creates a new cart_item item for the passed in concrete item
+          #
+          # The default copies all the common attributes from the passed in item to new cart_item (Except id). Override it if you want to do something special.
+          #
+          def new_from_item(item)
+            cart_item = self.new
+            item.class.columns.each { |col| cart_item.send((col.to_s + "=").to_sym, item.send(col)) if cart_item.respond_to?((col.to_s + "=").to_sym) }
+            cart_item
           end
 
           belongs_to self.aaci_config[:cart], :foreign_key => self.aaci_config[:foreign_key]
