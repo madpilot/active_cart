@@ -85,11 +85,13 @@ module ActiveCart
         #
         # Options:
         #
-        # cart: The cart model. Association as a belongs_to. Default: cart
-        # quantity_column: The column that stores the quantity of this item stored in the cart. Default: quantity
-        # name_column: The column that stores the name of the item. Default: name
-        # price_column: The column that stores the price of the item. Default: price
-        # foreign_key: The column that stores the reference to the cart. Default: [cart]_id (Where cart is the value of the cart option)
+        #   cart: The cart model. Association as a belongs_to. Default: cart
+        #   quantity_column: The column that stores the quantity of this item stored in the cart. Default: quantity
+        #   name_column: The column that stores the name of the item. Default: name
+        #   price_column: The column that stores the price of the item. Default: price
+        #   foreign_key: The column that stores the reference to the cart. Default: [cart]_id (Where cart is the value of the cart option)
+        #
+        # Example
         #
         #   class Item < ActiveModel::Base
         #     acts_as_item
@@ -152,10 +154,12 @@ module ActiveCart
         #
         # Options:
         #
-        # cart: The cart model. Association as a belongs_to. Default: cart
-        # name_column: The column that stores the name of the item. Default: name
-        # price_column: The column that stores the price of the item. Default: price
-        # foreign_key: The column that stores the reference to the cart. Default: [cart]_id (Where cart is the value of the cart option)
+        #   cart: The cart model. Association as a belongs_to. Default: cart
+        #   name_column: The column that stores the name of the item. Default: name
+        #   price_column: The column that stores the price of the item. Default: price
+        #   foreign_key: The column that stores the reference to the cart. Default: [cart]_id (Where cart is the value of the cart option)
+        #
+        # Example
         #
         #   class OrderTotal < ActiveModel::Base
         #     acts_as_order_total
