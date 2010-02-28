@@ -44,15 +44,5 @@ module ActiveCart
     def name
       raise NotImplementedError
     end
-
-    # Returns a short description of the order total. Can be used for display (Such as on an invoices etc)
-    #
-    # This must be overriden in the mixee class, otherwise it will throw a NotImplementedError
-    #
-    #   @order.description # => "This example order class doesn't do much"
-    #
-    def description
-      raise NotImplementedError
-    end
   end
 end

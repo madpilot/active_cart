@@ -1,6 +1,7 @@
 class TestOrderTotal
-  attr_accessor :price, :active
-  def initialize(price, active = true)
+  attr_accessor :price, :active, :name
+  def initialize(name, price, active = true)
+    @name = name
     @price = price
     @active = active
   end

@@ -72,10 +72,10 @@ class OrderTotalCollectionTest < ActiveSupport::TestCase
 
     context 'total' do
       setup do
-        @total_1 = TestOrderTotal.new(10, true)
-        @total_2 = TestOrderTotal.new(5, false)
-        @total_3 = TestOrderTotal.new(2, true)
-        @total_4 = TestOrderTotal.new(14, true)
+        @total_1 = TestOrderTotal.new('Total 1', 10, true)
+        @total_2 = TestOrderTotal.new('Total 2', 5, false)
+        @total_3 = TestOrderTotal.new('Total 3', 2, true)
+        @total_4 = TestOrderTotal.new('Total 4', 14, true)
       end
 
       should 'call price on each order_total item that are active' do

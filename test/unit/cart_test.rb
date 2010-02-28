@@ -219,8 +219,8 @@ class CartTest < ActiveSupport::TestCase
 
       context 'setup' do
         should 'take a block to add order_totals' do
-          @total_1 = TestOrderTotal.new(10, true)
-          @total_2 = TestOrderTotal.new(20, true)
+          @total_1 = TestOrderTotal.new('Total 1', 10, true)
+          @total_2 = TestOrderTotal.new('Total 2', 20, true)
           
           @cart_storage_engine = TestCartStorage.new
           @cart = ActiveCart::Cart.new(@cart_storage_engine) do |o|
@@ -239,8 +239,8 @@ class CartTest < ActiveSupport::TestCase
           @item_2.price = 20
           @item_3 = TestItem.new(3)
           @item_3.price = 30
-          @total_1 = TestOrderTotal.new(10, true)
-          @total_2 = TestOrderTotal.new(20, true)
+          @total_1 = TestOrderTotal.new('Total 1', 10, true)
+          @total_2 = TestOrderTotal.new('Total 2', 20, true)
 
           @cart.order_total_calculators += [ @total_1, @total_2 ]
           @cart.add_to_cart(@item_1)

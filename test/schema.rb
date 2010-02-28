@@ -2,6 +2,7 @@ ActiveRecord::Schema.define :version => 0 do
   create_table :carts, :force => true do |t|
     t.string :invoice_id
     t.string :state
+    t.string :dummy # Not needed in real carts - used sa a dummy field for testing
   end
 
   create_table :cart_items, :force => true do |t|
