@@ -170,7 +170,6 @@ module ActiveCart
           
           self.aaot_config = {
             :cart => :cart,
-            :quantity_column => :quantity,
             :name_column => :name,
             :price_column => :price
           }

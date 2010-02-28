@@ -12,11 +12,13 @@ ActiveRecord::Schema.define :version => 0 do
     t.float :price
     t.integer :original_id
     t.string :original_type
+    t.string :dummy # Not needed in real carts - used sa a dummy field for testing
   end
 
   create_table :order_totals, :force => true do |t|
     t.integer :cart_id
-    t.name :name
+    t.string :name
     t.float :total
+    t.string :dummy # Not needed in real carts - used sa a dummy field for testing
   end
 end

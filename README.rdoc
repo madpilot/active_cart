@@ -2,10 +2,13 @@
 
 ActiveCart is a Shopping Cart framework, it's not a fullyfledged cart, so you will need to do some stuff to get it to work.
 
-The cart system has a storage engine, which means you aren't bound to a particular database (Eventually there will be different engines already built to get you started
+The cart system has a storage engine, which means you aren't bound to a particular database. So far, there is a an ActiveModel storage engine, called acts_as_cart, but the
+gem isn't just for Rails, by writing other engines, you could target any datastore.
 
 == Installation
   gem install active_cart
+
+== Usage
 
   require 'rubygems'
   require 'active_cart'
@@ -38,8 +41,4 @@ For information about the API and interfase, checkout the documentation: http://
   >> c.total
   => 20
 
-== TODO
-
-Write an ActiveMerchant acts_as_ plugin. Write an interface to MondoDB or CouchDB (or both). Write a reference rails engine that implements a working shopping cart site
-
-Copyright (c) 2010 Myles Eftos (myles@madpilot.com.au), released under the MIT license
+Copyright (c) 2010 Myles Eftos http://www.madpilot.com.au/contact, released under the MIT license

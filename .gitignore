@@ -1,3 +1,4 @@
 *.gemspec
 pkg
 rdoc
+test/log/*.log
