@@ -175,7 +175,7 @@ module ActiveCart
             :price_column => :price
           }
           self.aaot_config.merge!(options)
-          self.aaot_config[:foreign_key] = (self.aaci_config[:cart].to_s + "_id").to_sym unless options[:foreign_key]
+          self.aaot_config[:foreign_key] = (self.aaot_config[:cart].to_s + "_id").to_sym unless options[:foreign_key]
 
           class_eval do
             include ActiveCart::Item
@@ -185,15 +185,15 @@ module ActiveCart
             end
 
             def name
-              read_attribute(self.aaci_config[:name_column])
+              read_attribute(self.aaot_config[:name_column])
             end
 
             def price
-              read_attribute(self.aaci_config[:price_column])
+              read_attribute(self.aaot_config[:price_column])
             end
           end
 
-          belongs_to self.aaci_config[:cart], :foreign_key => self.aaci_config[:foreign_key]
+          belongs_to self.aaot_config[:cart], :foreign_key => self.aaot_config[:foreign_key]
         end
       end
     end
