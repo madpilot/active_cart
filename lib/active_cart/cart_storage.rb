@@ -15,73 +15,104 @@ module ActiveCart
   module CartStorage
     def self.included(base) #:nodoc:
       base.send :include, AASM
+
       base.aasm_initial_state :shopping
-      base.aasm_state :shopping
-      base.aasm_state :checkout
-      base.aasm_state :verifying_payment
-      base.aasm_state :completed
-      base.aasm_state :failed
+      base.aasm_state :shopping, :enter => :enter_shopping, :exit => :exit_shopping
+      base.aasm_state :checkout, :enter => :enter_checkout, :exit => :exit_checkout
+      base.aasm_state :verifying_payment, :enter => :enter_verifying_payment, :exit => :exit_verifying_payment
+      base.aasm_state :completed, :enter => :enter_completed, :ext => :exit_completed
+      base.aasm_state :failed, :enter => :enter_failed, :exit => :exit_failed
 
       base.aasm_event :continue_shopping do
-        transitions :from => [ :checkout, :verifying_payment ], :to => :shopping, :enter => :before_continue_shopping, :exit => :after_continue_shopping
+        transitions :from => [ :checkout, :verifying_payment ], :to => :shopping, :guard => :guard_continue_shopping
       end
 
       base.aasm_event :checkout do
-        transitions :from => [ :shopping, :verifying_payment ], :to => :checkout, :enter => :before_checkout, :exit => :after_checkout
+        transitions :from => [ :shopping, :verifying_payment ], :to => :checkout, :guard => :guard_checkout
       end
 
       base.aasm_event :check_payment do
-        transitions :from => :checkout, :to => :verifying_payment, :enter => :before_check_payment, :exit => :after_check_payment
+        transitions :from => :checkout, :to => :verifying_payment, :guard => :guard_check_payment
       end
 
       base.aasm_event :payment_successful do
-        transitions :from => :verifying_payment, :to => :completed, :enter => :before_payment_successful, :exit => :after_payment_successful
+        transitions :from => :verifying_payment, :to => :completed, :guard => :guard_payment_successful
       end
 
       base.aasm_event :payment_failed do
-        transitions :from => :verifying_payment, :to => :failed, :enter => :before_payment_failed, :exit => :after_payment_failed
+        transitions :from => :verifying_payment, :to => :failed, :guard => :guard_payment_failed
       end
     end
 
-    # Called before transitioning into continuing_shopping
+    # Guard continue shopping. If this method returns false, the transition will be halted
     #
-    def before_continuing_shopping; end
-    
-    # Called after transitioning into continuing_shopping
-    #
-    def after_continuing_shopping; end
+    def guard_continue_shopping
+      true
+    end
 
-    # Called before transitioning into checkout
+    # Guard checkout. If this method returns false, the transition will be halted
     #
-    def before_checkout; end
+    def guard_checkout
+      true
+    end
+    
+    # Guard check payment. If this method returns false, the transition will be halted
+    #
+    def guard_check_payment
+      true
+    end
+    
+    # Guard payment successful. If this method returns false, the transition will be halted
+    #
+    def guard_payment_successful
+      true
+    end
+    
+    # Guard payment failed. If this method returns false, the transition will be halted
+    #
+    def guard_payment_failed
+      true
+    end
 
-    # Called after transitioning into checkout
+    # Called when entering the shopping state
     #
-    def after_checkout; end
+    def enter_shopping; end
     
-    # Called before transitioning into check_payment
+    # Called when exiting the shopping state
     #
-    def before_check_payment; end
+    def exit_shopping; end
+
+    # Called when entering the checkout state
+    #
+    def enter_checkout; end
+
+    # Called when existing the checkout state
+    #
+    def exit_checkout; end
     
-    # Called after transitioning into check_payment
+    # Called when entering the verifying_payment state
     #
-    def after_check_payment; end
+    def enter_verifying_payment; end
     
-    # Called before transitioning into payment_successful
+    # Called when exiting the verifying_payment state
     #
-    def before_payment_successful; end
+    def exit_verifying_payment; end
     
-    # Called after transitioning into payment_successful
+    # Called when entering the completed state
     #
-    def after_payment_successful; end
+    def enter_completed; end
     
-    # Called before transitioning into failed
+    # Called when existing the completed state
     #
-    def before_payment_failed; end
+    def exit_completed; end
     
-    # Called after transitioning into failed
+    # Called when entering the failed state
     #
-    def after_payment_failed; end
+    def enter_failed; end
+    
+    # Called when existing the failed state
+    #
+    def exit_failed; end
 
     # Returns the unique invoice_id for this cart instance. This MUST be overriden by the concrete class this module is mixed into, otherwise you
     # will get a NotImplementedError

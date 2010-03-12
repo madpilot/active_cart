@@ -78,9 +78,16 @@ module ActiveCart
     #   @cart[0].size # => 7
     #   @cart[1].size # => 4
     #
+    # Callbacks:
+    #
+    # Calls the storage engines before_add_to_cart(item, quantity) and after_add_to_cart(item, quantity) methods (if they exist). If before_add_to_cart returns false, the add will be halted.
+    # Calls the items before_add_to_item(quantity) and after_add_to_cart(quantity) methods (if they exist). If before_add_to_cart returns false, the add will be halted.
+    #
     def add_to_cart(item, quantity = 1)
       return false unless item.before_add_to_cart(quantity) if item.respond_to?(:before_add_to_cart)
+      return false unless @storage_engine.before_add_to_cart(item, quantity) if @storage_engine.respond_to?(:before_add_to_cart)
       @storage_engine.add_to_cart(item, quantity)
+      @storage_engine.after_add_to_cart(item, quantity) if @storage_engine.respond_to?(:after_add_to_cart)
       item.after_add_to_cart(quantity) if item.respond_to?(:after_add_to_cart)
     end
 
@@ -93,9 +100,16 @@ module ActiveCart
     #   @cart.remove_from_cart(item, 2)
     #   @cart[0] # => nil
     #
+    # Callbacks:
+    #
+    # Calls the storage engines before_remove_from_cart(item, quantity) and after_remove_from_cart(item, quantity) methods (if they exist). If before_remove_from_cart returns false, the remove will be halted.
+    # Calls the items before_remove_from_item(quantity) and after_remove_from_cart(quantity) methods (if they exist). If before_remove_from_cart returns false, the remove will be halted.
+    #
     def remove_from_cart(item, quantity = 1)
       return false unless item.before_remove_from_cart(quantity) if item.respond_to?(:before_remove_from_cart)
+      return false unless @storage_engine.before_remove_from_cart(item, quantity) if @storage_engine.respond_to?(:before_remove_from_cart)
       @storage_engine.remove_from_cart(item, quantity)
+      @storage_engine.after_remove_from_cart(item, quantity) if @storage_engine.respond_to?(:after_remove_from_cart)
       item.after_remove_from_cart(quantity) if item.respond_to?(:after_remove_from_cart)
     end
     
@@ -111,29 +125,14 @@ module ActiveCart
       storage_engine.state
     end
 
-    # Transitions to the cart's :shopping state
-    def continue_shopping!
-      storage_engine.continue_shopping!
-    end
-
-    # Transitions to the cart's :checkout state
-    def checkout!
-      storage_engine.checkout!
-    end
-
-    # Transitions to the cart's :verifying_payment state
-    def check_payment!
-      storage_engine.check_payment!
-    end
-
-    # Transitions to the cart's :successful state
-    def payment_successful!
-      storage_engine.payment_successful!
-    end
-
-    # Transitions to the cart's :failed state
-    def payment_failed!
-      storage_engine.payment_failed!
+    # :nodoc
+    def method_missing(symbol, *args)
+      # This allows developers to add extra aasm event transaction, and still allow them to called from the cart
+      if @storage_engine.class.aasm_events.keys.include?(symbol.to_s[0..-2].to_sym)
+        @storage_engine.send(symbol)
+      else
+        super
+      end
     end
   end
 end

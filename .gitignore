@@ -2,3 +2,4 @@
 pkg
 rdoc
 test/log/*.log
+coverage
