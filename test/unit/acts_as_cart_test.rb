@@ -292,6 +292,18 @@ class ActsAsCartTest < ActiveSupport::TestCase
       end
     end
 
+    context 'new_from_item' do
+      should 'copy all the relevent paramaters from the supplied item into a new cart item' do
+        @item = Item.make
+        @cart_item = CartItem.new_from_item(@item)
+        assert @cart_item.valid?
+        assert_equal @item.name, @cart_item.name
+        assert_equal @item.price, @cart_item.price
+        assert_equal @item, @cart_item.original
+      end
+    end
+
+
     context 'acts_as_order_total' do
        context 'configuration' do
         should 'set defaults' do

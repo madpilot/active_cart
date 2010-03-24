@@ -20,7 +20,7 @@ module ActiveCart
       base.aasm_state :shopping, :enter => :enter_shopping, :exit => :exit_shopping
       base.aasm_state :checkout, :enter => :enter_checkout, :exit => :exit_checkout
       base.aasm_state :verifying_payment, :enter => :enter_verifying_payment, :exit => :exit_verifying_payment
-      base.aasm_state :completed, :enter => :enter_completed, :ext => :exit_completed
+      base.aasm_state :completed, :enter => :enter_completed, :exit => :exit_completed
       base.aasm_state :failed, :enter => :enter_failed, :exit => :exit_failed
 
       base.aasm_event :continue_shopping do

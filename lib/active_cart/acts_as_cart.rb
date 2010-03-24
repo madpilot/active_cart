@@ -184,7 +184,8 @@ module ActiveCart
           #
           def new_from_item(item)
             cart_item = self.new
-            item.class.columns.each { |col| cart_item.send((col.to_s + "=").to_sym, item.send(col)) if cart_item.respond_to?((col.to_s + "=").to_sym) }
+            item.class.columns.map {|col| col.name }.each { |col| cart_item.send((col.to_s + "=").to_sym, item.send(col)) if cart_item.respond_to?((col.to_s + "=").to_sym) }
+            cart_item.original = item
             cart_item
           end
 

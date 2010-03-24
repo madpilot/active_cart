@@ -42,6 +42,26 @@ module ActiveCart
 
     extend Forwardable
     # Storage Engine Array delegators
+    # TODO: Consolidate - not all of these make sense, and some need overriding so they take the callbacks into account
+    # 
+    # Candidates for removal:
+    #   delete_at
+    #   delete_if
+    #   []=
+    #   replace
+    #   insert
+    #   shift
+    #   unshift
+    #   pop
+    #
+    # Aliases
+    #   delete => remove_from_cart(obj, 1)
+    #   << => add_to_cart(obj, 1)
+    #   push => add_to_cart(obj, 1)
+    #
+    # Overrides
+    #   clear => .each { |obj| self.remove_from_cart(obj) }
+    #
     def_delegators :@storage_engine, :[], :<<, :[]=, :at, :clear, :collect, :map, :delete, :delete_at, :each, :each_index, :empty?, :eql?, :first, :include?, :index, :inject, :last, :length, :pop, :push, :shift, :size, :unshift
     
     # Returns a unique id for the invoice. It's upto the storage engine to generate and track these numbers
@@ -84,11 +104,9 @@ module ActiveCart
     # Calls the items before_add_to_item(quantity) and after_add_to_cart(quantity) methods (if they exist). If before_add_to_cart returns false, the add will be halted.
     #
     def add_to_cart(item, quantity = 1)
-      return false unless item.before_add_to_cart(quantity) if item.respond_to?(:before_add_to_cart)
-      return false unless @storage_engine.before_add_to_cart(item, quantity) if @storage_engine.respond_to?(:before_add_to_cart)
-      @storage_engine.add_to_cart(item, quantity)
-      @storage_engine.after_add_to_cart(item, quantity) if @storage_engine.respond_to?(:after_add_to_cart)
-      item.after_add_to_cart(quantity) if item.respond_to?(:after_add_to_cart)
+      with_callbacks(:add_to_cart, item, quantity) do
+        @storage_engine.add_to_cart(item, quantity)
+      end
     end
 
     # Removes an item from the cart (identified by the id of the item). If the supplied quantity is greater than equal to the number in the cart, the item will be removed, otherwise the quantity will simply be decremented by the supplied amount
@@ -106,11 +124,9 @@ module ActiveCart
     # Calls the items before_remove_from_item(quantity) and after_remove_from_cart(quantity) methods (if they exist). If before_remove_from_cart returns false, the remove will be halted.
     #
     def remove_from_cart(item, quantity = 1)
-      return false unless item.before_remove_from_cart(quantity) if item.respond_to?(:before_remove_from_cart)
-      return false unless @storage_engine.before_remove_from_cart(item, quantity) if @storage_engine.respond_to?(:before_remove_from_cart)
-      @storage_engine.remove_from_cart(item, quantity)
-      @storage_engine.after_remove_from_cart(item, quantity) if @storage_engine.respond_to?(:after_remove_from_cart)
-      item.after_remove_from_cart(quantity) if item.respond_to?(:after_remove_from_cart)
+      with_callbacks(:remove_from_cart, item, quantity) do
+        @storage_engine.remove_from_cart(item, quantity)
+      end
     end
     
     # Returns the total of the cart. This includes all the order_total calculations
@@ -133,6 +149,17 @@ module ActiveCart
       else
         super
       end
+    end
+
+  private
+    def with_callbacks(type, item, quantity, &blk)
+      return false unless item.send("before_#{type}".to_sym, quantity) if item.respond_to?("before_#{type}".to_sym)
+      return false unless @storage_engine.send("before_#{type}".to_sym, item, quantity) if @storage_engine.respond_to?("before_#{type}".to_sym)
+      
+      yield
+      
+      @storage_engine.send("after_#{type}".to_sym, item, quantity) if @storage_engine.respond_to?("after_#{type}".to_sym)
+      item.send("after_#{type}".to_sym, quantity) if item.respond_to?("after_#{type}".to_sym)
     end
   end
 end

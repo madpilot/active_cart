@@ -17,7 +17,7 @@ class CartTest < ActiveSupport::TestCase
             assert_equal 1, @cart.quantity
           end
 
-          should 'halt and return false if beforee_add_to_cart returnds false' do
+          should 'halt and return false if before_add_to_cart returns false' do
             item = TestItem.new
             item.expects(:before_add_to_cart).with(1).returns(false)
             assert !@cart.add_to_cart(item, 1)
