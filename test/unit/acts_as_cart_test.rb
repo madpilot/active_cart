@@ -459,6 +459,18 @@ class ActsAsCartTest < ActiveSupport::TestCase
         assert_not_nil Item.find(item.id)
       end
 
+      should 'remove all the items from the cart if the quantity is set to :all' do
+        item = Item.make
+        @cart.add_to_cart(item, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+
+        @cart.remove_from_cart(item, :all)
+        assert_equal 0, @cart.size
+
+        assert_not_nil Item.find(item.id)
+      end
+
       should "simply return if the item doesn't exist in the cart" do
         item = Item.make
         @cart.add_to_cart(item, 10)

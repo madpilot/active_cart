@@ -83,6 +83,8 @@ module ActiveCart
             def remove_from_cart(item, quantity = 1)
               cart_item = find_cart_item(item)
               if cart_item
+                quantity = cart_item.quantity if quantity == :all #TEST!!!
+
                 if cart_item.quantity - quantity > 0
                   cart_item.quantity = cart_item.quantity - quantity
                   cart_item.save!
