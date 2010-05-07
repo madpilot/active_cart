@@ -425,6 +425,42 @@ class ActsAsCartTest < ActiveSupport::TestCase
       end
     end
 
+    context 'update_cart' do
+      should 'update the number of items in the cart if the item is in the cart' do
+        item = Item.make
+        
+        @cart.add_to_cart(item, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+
+        @cart.update_cart(item, 20)
+        assert_equal 1, @cart.size
+        assert_equal 20, @cart.quantity
+      end
+
+      should 'set the given quantity of items in to the cart if the item is not yet in the cart' do
+        item = Item.make
+        
+        @cart.update_cart(item, 20)
+        assert_equal 1, @cart.size
+        assert_equal 20, @cart.quantity
+      end
+
+      should 'set the given quantity of item in to the cart if the requested value is lower than the current quantity' do
+        item = Item.make
+
+        @cart.add_to_cart(item, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+
+        @cart.update_cart(item, 4)
+        assert_equal 1, @cart.size
+        assert_equal 4, @cart.quantity
+      end
+    end
+
+
+
     context 'remove_from_cart' do
       should 'remove the quantity supplied from the cart' do
         item = Item.make

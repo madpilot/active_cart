@@ -94,6 +94,22 @@ module ActiveCart
               end
               self.reload 
             end
+
+            #:nodoc
+            def update_cart(item, quantity = 1)
+              cart_item = find_cart_item(item)
+              if cart_item
+                diff = quantity - cart_item.quantity
+                
+                if diff < 0
+                  return remove_from_cart(item, -1 * diff)
+                else
+                  return add_to_cart(item, diff)
+                end
+              else
+                return add_to_cart(item, quantity)
+              end
+            end
           end
          
           aasm_column self.aac_config[:state_column]
