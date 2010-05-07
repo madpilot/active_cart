@@ -109,6 +109,30 @@ module ActiveCart
       end
     end
 
+    # Sets the quantity of an item to the supplied value
+    #
+    #   @cart.add_to_cart(item, 5)
+    #   @cart[0].quantity # => 5
+    #   @cart.update_cart(item, 15)
+    #   @cart[0].quantity # => 15
+    #   @cart.update_cart(item, 2)
+    #   @cart[0].quantity # => 2
+    #
+    def update_cart(item, quantity = 1)
+      if @storage_engine.include?(item)
+        index = @storage_engine.index(item)
+        diff = quantity - @storage_engine.at(index).quantity
+        
+        if diff < 0
+          return remove_from_cart(item, -1 * diff)
+        else
+          return add_to_cart(item, diff)
+        end
+      else
+        return add_to_cart(item, quantity)
+      end
+    end
+
     # Removes an item from the cart (identified by the id of the item). If the supplied quantity is greater than equal to the number in the cart, the item will be removed, otherwise the quantity will simply be decremented by the supplied amount
     #
     #   @cart.add_to_cart(item, 5)

@@ -8,6 +8,39 @@ class CartTest < ActiveSupport::TestCase
         @cart = ActiveCart::Cart.new(@cart_storage_engine)
       end
 
+      context 'update_cart' do
+        should 'update the number of items in the cart if the item is in the cart' do
+          item = TestItem.new(1)
+          @cart.add_to_cart(item, 10)
+          assert_equal 1, @cart.size
+          assert_equal 10, @cart.quantity
+
+          @cart.update_cart(item, 20)
+          assert_equal 1, @cart.size
+          assert_equal 20, @cart.quantity
+        end
+
+        should 'set the given quantity of items in to the cart if the item is not yet in the cart' do
+          item = TestItem.new(1)
+          
+          @cart.update_cart(item, 20)
+          assert_equal 1, @cart.size
+          assert_equal 20, @cart.quantity
+        end
+
+        should 'set the given quantity of item in to the cart if the requested value is lower than the current quantity' do
+          item = TestItem.new(1)
+
+          @cart.add_to_cart(item, 10)
+          assert_equal 1, @cart.size
+          assert_equal 10, @cart.quantity
+
+          @cart.update_cart(item, 4)
+          assert_equal 1, @cart.size
+          assert_equal 4, @cart.quantity
+        end
+      end
+
       context 'callbacks' do
         context 'items' do
           should 'fire the item before_add_to_cart callback on add to cart' do
@@ -50,6 +83,55 @@ class CartTest < ActiveSupport::TestCase
             item = TestItem.new
             item.expects(:after_remove_from_cart).with(1)
             @cart.remove_from_cart(item, 1)
+          end
+
+          should 'fire the item before_add_to_cart callback if update_cart adds items to the cart' do
+            item = TestItem.new
+            @cart.add_to_cart(item, 10)
+            item.expects(:before_add_to_cart).with(10).returns(true)
+            @cart.update_cart(item, 20)
+            assert 20, @cart.quantity
+          end
+
+          should 'halt and return false if before_add_to_cart callback returns fale when update_cart adds items to the cart' do
+            item = TestItem.new
+            @cart.add_to_cart(item, 10)
+            item.expects(:before_add_to_cart).with(10).returns(false)
+            assert !@cart.update_cart(item, 20)
+            assert 10, @cart.quantity
+          end
+
+          should 'fire the item after_add_to_cart callback if update_cart adds items to the cart' do
+            item = TestItem.new
+            @cart.add_to_cart(item, 10)
+            item.expects(:after_add_to_cart).with(10).returns(true)
+            @cart.update_cart(item, 20)
+            assert 20, @cart.quantity
+          end
+
+           should 'fire the item after_remove_from_cart callback if update_cart removes items from the cart' do
+            item = TestItem.new
+            @cart.add_to_cart(item, 10)
+            item.expects(:before_remove_from_cart).with(5).returns(true)
+            @cart.update_cart(item, 5)
+            assert 5, @cart.quantity
+          end
+
+          should 'halt and return false if after_remove_from_cart callback returns false when update_cart removes items from the cart' do
+            item = TestItem.new
+            @cart.add_to_cart(item, 10)
+            item.expects(:before_remove_from_cart).with(5).returns(false)
+            assert !@cart.update_cart(item, 5)
+            assert 10, @cart.quantity
+          end
+
+
+          should 'fire the item after_remove_from_cart callback if update_cart adds items to the cart' do
+            item = TestItem.new
+            @cart.add_to_cart(item, 10)
+            item.expects(:after_remove_from_cart).with(5).returns(true)
+            @cart.update_cart(item, 5)
+            assert 10, @cart.quantity
           end
         end
 

@@ -297,6 +297,17 @@ class CartStorageTest < ActiveSupport::TestCase
         assert_equal 1, @cart.size
         assert_equal 10, @cart.quantity
       end
+
+      should "remove all items if the quantity is set to :all" do
+        item = TestItem.new(1)
+        @cart.add_to_cart(item, 10)
+        assert_equal 1, @cart.size
+        assert_equal 10, @cart.quantity
+        
+        @cart.remove_from_cart(item, :all)
+        assert_equal 0, @cart.size
+        assert_equal 0, @cart.quantity
+      end
     end
   end
 end

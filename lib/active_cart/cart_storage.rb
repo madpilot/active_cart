@@ -168,10 +168,17 @@ module ActiveCart
     #   @cart[0].quantity # => 2
     #   @cart.remove_from_cart(item, 2)
     #   @cart[0] # => nil
-    #
+    #   
+    #   @cart.add_to_cart(item, 3)
+    #   @cart[0].quantity # => 3
+    #   @cart_remove_from_cart(item, :all)
+    #   @cart[[0].quantity # => 0
     def remove_from_cart(item, quantity = 1)
       if self.include?(item)
         index = self.index(item)
+        
+        quantity = self.at(index).quantity if quantity == :all
+
         if (existing = self.at(index)).quantity - quantity > 0
           existing.quantity = existing.quantity - quantity
         else
