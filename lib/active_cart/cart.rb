@@ -178,11 +178,11 @@ module ActiveCart
   private
     def with_callbacks(type, item, quantity, options, &blk)
       return false unless item.send("before_#{type}".to_sym, quantity, options) if item.respond_to?("before_#{type}".to_sym)
-      return false unless @storage_engine.send("before_#{type}".to_sym, quantity, options) if @storage_engine.respond_to?("before_#{type}".to_sym)
+      return false unless @storage_engine.send("before_#{type}".to_sym, item, quantity, options) if @storage_engine.respond_to?("before_#{type}".to_sym)
       
       yield
       
-      @storage_engine.send("after_#{type}".to_sym, quantity, options) if @storage_engine.respond_to?("after_#{type}".to_sym)
+      @storage_engine.send("after_#{type}".to_sym, item, quantity, options) if @storage_engine.respond_to?("after_#{type}".to_sym)
       item.send("after_#{type}".to_sym, quantity, options) if item.respond_to?("after_#{type}".to_sym)
     end
   end
