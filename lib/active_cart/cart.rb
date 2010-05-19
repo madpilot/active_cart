@@ -103,9 +103,9 @@ module ActiveCart
     # Calls the storage engines before_add_to_cart(item, quantity) and after_add_to_cart(item, quantity) methods (if they exist). If before_add_to_cart returns false, the add will be halted.
     # Calls the items before_add_to_item(quantity) and after_add_to_cart(quantity) methods (if they exist). If before_add_to_cart returns false, the add will be halted.
     #
-    def add_to_cart(item, quantity = 1)
-      with_callbacks(:add_to_cart, item, quantity) do
-        @storage_engine.add_to_cart(item, quantity)
+    def add_to_cart(item, quantity = 1, options = {})
+      with_callbacks(:add_to_cart, item, quantity, options) do
+        @storage_engine.add_to_cart(item, quantity, options)
       end
     end
 
@@ -118,18 +118,18 @@ module ActiveCart
     #   @cart.update_cart(item, 2)
     #   @cart[0].quantity # => 2
     #
-    def update_cart(item, quantity = 1)
+    def update_cart(item, quantity = 1, options = {})
       if @storage_engine.include?(item)
         index = @storage_engine.index(item)
         diff = quantity - @storage_engine.at(index).quantity
         
         if diff < 0
-          return remove_from_cart(item, -1 * diff)
+          return remove_from_cart(item, -1 * diff, options)
         else
-          return add_to_cart(item, diff)
+          return add_to_cart(item, diff, options)
         end
       else
-        return add_to_cart(item, quantity)
+        return add_to_cart(item, quantity, options)
       end
     end
 
@@ -147,9 +147,9 @@ module ActiveCart
     # Calls the storage engines before_remove_from_cart(item, quantity) and after_remove_from_cart(item, quantity) methods (if they exist). If before_remove_from_cart returns false, the remove will be halted.
     # Calls the items before_remove_from_item(quantity) and after_remove_from_cart(quantity) methods (if they exist). If before_remove_from_cart returns false, the remove will be halted.
     #
-    def remove_from_cart(item, quantity = 1)
-      with_callbacks(:remove_from_cart, item, quantity) do
-        @storage_engine.remove_from_cart(item, quantity)
+    def remove_from_cart(item, quantity = 1, options = {})
+      with_callbacks(:remove_from_cart, item, quantity, options) do
+        @storage_engine.remove_from_cart(item, quantity, options)
       end
     end
     
@@ -176,14 +176,14 @@ module ActiveCart
     end
 
   private
-    def with_callbacks(type, item, quantity, &blk)
-      return false unless item.send("before_#{type}".to_sym, quantity) if item.respond_to?("before_#{type}".to_sym)
-      return false unless @storage_engine.send("before_#{type}".to_sym, item, quantity) if @storage_engine.respond_to?("before_#{type}".to_sym)
+    def with_callbacks(type, item, quantity, options, &blk)
+      return false unless item.send("before_#{type}".to_sym, quantity, options) if item.respond_to?("before_#{type}".to_sym)
+      return false unless @storage_engine.send("before_#{type}".to_sym, quantity, options) if @storage_engine.respond_to?("before_#{type}".to_sym)
       
       yield
       
-      @storage_engine.send("after_#{type}".to_sym, item, quantity) if @storage_engine.respond_to?("after_#{type}".to_sym)
-      item.send("after_#{type}".to_sym, quantity) if item.respond_to?("after_#{type}".to_sym)
+      @storage_engine.send("after_#{type}".to_sym, quantity, options) if @storage_engine.respond_to?("after_#{type}".to_sym)
+      item.send("after_#{type}".to_sym, quantity, options) if item.respond_to?("after_#{type}".to_sym)
     end
   end
 end

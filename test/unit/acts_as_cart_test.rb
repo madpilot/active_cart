@@ -363,6 +363,29 @@ class ActsAsCartTest < ActiveSupport::TestCase
       end
     end
 
+    context 'option passing' do
+      should 'pass options from add_to_cart to find_cart_item' do
+        item = Item.make
+        @cart.expects(:find_cart_item).with(item, { :options => 'value' })
+        @cart.add_to_cart(item, 1, { :options => 'value' })
+      end
+
+      should 'pass options from remove_from_cart to find_cart_item' do
+        item = Item.make
+        @cart.add_to_cart(item, 1)
+        @cart.expects(:find_cart_item).with(item, { :options => 'value' })
+        @cart.remove_from_cart(item, 1, { :options => 'value' })
+      end
+
+      should 'pass options from update_cart to find_cart_item' do
+        item = Item.make
+        @cart.add_to_cart(item, 1)
+        @cart.expects(:find_cart_item).with(item, { :options => 'value' }).times(2)
+        @cart.update_cart(item, 3, { :options => 'value' })
+      end
+
+    end
+
     context 'add to cart' do
       should 'add an item to the cart if the cart is empty' do
         assert @cart.empty?
@@ -458,8 +481,6 @@ class ActsAsCartTest < ActiveSupport::TestCase
         assert_equal 4, @cart.quantity
       end
     end
-
-
 
     context 'remove_from_cart' do
       should 'remove the quantity supplied from the cart' do

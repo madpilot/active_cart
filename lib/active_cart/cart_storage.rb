@@ -150,7 +150,7 @@ module ActiveCart
     #   @cart[0].quantity # => 7
     #   @cart[1].quantity # => 4
     #
-    def add_to_cart(item, quantity = 1)
+    def add_to_cart(item, quantity = 1, options = {})
       if self.include?(item)
         index = self.index(item)
         self.at(index).quantity += quantity
@@ -173,7 +173,7 @@ module ActiveCart
     #   @cart[0].quantity # => 3
     #   @cart_remove_from_cart(item, :all)
     #   @cart[[0].quantity # => 0
-    def remove_from_cart(item, quantity = 1)
+    def remove_from_cart(item, quantity = 1, option = {})
       if self.include?(item)
         index = self.index(item)
         

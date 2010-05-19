@@ -63,27 +63,27 @@ module ActiveCart
             end
 
             #:nodoc
-            def find_cart_item(item)
+            def find_cart_item(item, options = {})
               self.send(:cart_items).find(:first, :conditions => [ 'original_id = ? AND original_type = ?', item.id, item.class.to_s ])
             end
 
             #:nodoc
-            def add_to_cart(item, quantity = 1)
-              cart_item = find_cart_item(item)
+            def add_to_cart(item, quantity = 1, options = {})
+              cart_item = find_cart_item(item, options)
               if cart_item
                 cart_item.quantity += quantity
                 cart_item.save!
               else
-                cart_item = self.send(:cart_items).create!(self.aac_config[:cart_items].to_s.classify.constantize.new_from_item(item).attributes.merge(:quantity => quantity, :original_id => item.id, :original_type => item.class.to_s))
+                cart_item = self.send(:cart_items).create!(self.aac_config[:cart_items].to_s.classify.constantize.new_from_item(item, options).attributes.merge(:quantity => quantity, :original_id => item.id, :original_type => item.class.to_s))
               end
               self.reload 
             end
 
             #:nodoc
-            def remove_from_cart(item, quantity = 1)
-              cart_item = find_cart_item(item)
+            def remove_from_cart(item, quantity = 1, options = {})
+              cart_item = find_cart_item(item, options)
               if cart_item
-                quantity = cart_item.quantity if quantity == :all #TEST!!!
+                quantity = cart_item.quantity if quantity == :all
 
                 if cart_item.quantity - quantity > 0
                   cart_item.quantity = cart_item.quantity - quantity
@@ -96,18 +96,18 @@ module ActiveCart
             end
 
             #:nodoc
-            def update_cart(item, quantity = 1)
-              cart_item = find_cart_item(item)
+            def update_cart(item, quantity = 1, options = {})
+              cart_item = find_cart_item(item, options)
               if cart_item
                 diff = quantity - cart_item.quantity
                 
                 if diff < 0
-                  return remove_from_cart(item, -1 * diff)
+                  return remove_from_cart(item, -1 * diff, options)
                 else
-                  return add_to_cart(item, diff)
+                  return add_to_cart(item, diff, options)
                 end
               else
-                return add_to_cart(item, quantity)
+                return add_to_cart(item, quantity, options)
               end
             end
           end
@@ -200,11 +200,13 @@ module ActiveCart
           #
           # The default copies all the common attributes from the passed in item to new cart_item (Except id). Override it if you want to do something special.
           #
-          def new_from_item(item)
+          def new_from_item(item, options = {})
             cart_item = self.new
             item.class.columns.map {|col| col.name }.each { |col| cart_item.send((col.to_s + "=").to_sym, item.send(col)) if cart_item.respond_to?((col.to_s + "=").to_sym) }
             cart_item.original = item
+            # TODO Add a callback
             cart_item
+            # TODO Add a callback
           end
 
           belongs_to self.aaci_config[:cart], :foreign_key => self.aaci_config[:foreign_key]
