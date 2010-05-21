@@ -182,6 +182,13 @@ class CartStorageTest < ActiveSupport::TestCase
         @item_3.price = 9
       end
 
+      should 'cast the price to a float' do
+        price = mock()
+        @item_1.stubs(:price).returns(price)
+        @cart.add_to_cart(@item_1)
+        @item_1.price.expects(:to_f).returns(10).once
+        assert_equal 10, @cart.sub_total
+      end
 
       should 'return the price of a single item in the cart' do
         @cart.add_to_cart(@item_1)

@@ -126,7 +126,7 @@ module ActiveCart
     #   @cart.sub_total # => 100.00
     #
     def sub_total
-      inject(0) { |t, item| t + (item.quantity * item.price)  }
+      inject(0) { |t, item| t + (item.quantity * item.price.to_f)  }
     end
 
     # Returns the number of items in the cart. It takes into account the individual quantities of each item, eg if there are 3 items in the cart, each with a quantity of 2, this will return 6
