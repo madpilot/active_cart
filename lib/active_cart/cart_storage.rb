@@ -24,7 +24,7 @@ module ActiveCart
       base.aasm_state :failed, :enter => :enter_failed, :exit => :exit_failed
 
       base.aasm_event :continue_shopping do
-        transitions :from => [ :checkout, :verifying_payment ], :to => :shopping, :guard => :guard_continue_shopping
+        transitions :from => [ :checkout, :verifying_payment, :failed ], :to => :shopping, :guard => :guard_continue_shopping
       end
 
       base.aasm_event :checkout do

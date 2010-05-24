@@ -182,6 +182,20 @@ class CartStorageTest < ActiveSupport::TestCase
           end
           assert_equal :checkout, @cart_storage_engine.state
         end
+
+        should 'transition from failed to shopping' do
+          @cart_storage_engine.expects(:exit_failed)
+          @cart_storage_engine.expects(:guard_continue_shopping).returns(true)
+          
+          @cart_storage_engine.checkout!
+          @cart_storage_engine.check_payment!
+          @cart_storage_engine.payment_failed!
+          assert_nothing_raised do
+            @cart_storage_engine.continue_shopping!
+          end
+          assert_equal :shopping, @cart_storage_engine.state
+        end
+
       end
     end
 
