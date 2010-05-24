@@ -8,7 +8,7 @@ module ActiveCart
   #   @cart.check_payment! # transistions from checkout to verifying_payment
   #   @cart.payment_successful! # transitions from verifying_payment to completed
   #   @cart.payment_failed! # transitions from verifying_payment to failed
-  #   @cart.continue_shopping # transitions from checkout or verifying_payment to shopping
+  #   @cart.continue_shopping # transitions from checkout, verifying_payment or failed to shopping
   #   
   #   It will fire before_ and after callbacks with the same name as the transitions
   #
