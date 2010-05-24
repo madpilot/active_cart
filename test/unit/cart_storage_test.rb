@@ -169,6 +169,19 @@ class CartStorageTest < ActiveSupport::TestCase
           assert_equal :verifying_payment, @cart_storage_engine.state
         end
 
+        should 'transition from failed to checkout' do
+          @cart_storage_engine.expects(:enter_checkout).twice
+          @cart_storage_engine.expects(:exit_failed)
+          @cart_storage_engine.expects(:guard_check_payment).returns(true)
+          
+          @cart_storage_engine.checkout!
+          @cart_storage_engine.check_payment!
+          @cart_storage_engine.payment_failed!
+          assert_nothing_raised do
+            @cart_storage_engine.checkout!
+          end
+          assert_equal :checkout, @cart_storage_engine.state
+        end
       end
     end
 

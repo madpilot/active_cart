@@ -4,7 +4,7 @@ module ActiveCart
   # The CartStorage object uses a state machine to track the state of the cart. The default states are: shopping, checkout, verifying_payment, completed, failed. It exposed the following transitions:
   # continue_shopping, checkout, check_payment, payment_successful, payment_failed
   #
-  #   @cart.checkout! # transitions from shopping or verifying_payment to checkout
+  #   @cart.checkout! # transitions from shopping, verifying_payment or failed to checkout
   #   @cart.check_payment! # transistions from checkout to verifying_payment
   #   @cart.payment_successful! # transitions from verifying_payment to completed
   #   @cart.payment_failed! # transitions from verifying_payment to failed
@@ -28,7 +28,7 @@ module ActiveCart
       end
 
       base.aasm_event :checkout do
-        transitions :from => [ :shopping, :verifying_payment ], :to => :checkout, :guard => :guard_checkout
+        transitions :from => [ :shopping, :verifying_payment, :failed ], :to => :checkout, :guard => :guard_checkout
       end
 
       base.aasm_event :check_payment do
