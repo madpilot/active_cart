@@ -370,6 +370,18 @@ class ActsAsCartTest < ActiveSupport::TestCase
         @cart.add_to_cart(item, 1, { :options => 'value' })
       end
 
+      should 'add the quantity to the options hash' do
+        item = Item.make
+        CartItem.expects(:new_from_item).with(item, { :quantity => 2 }).returns(CartItem.make)
+        @cart.add_to_cart(item, 2)
+      end
+
+      should 'allow the quantity to be overriden in the options hash' do
+        item = Item.make
+        CartItem.expects(:new_from_item).with(item, { :quantity => 4 }).returns(CartItem.make)
+        @cart.add_to_cart(item, 2, { :quantity => 4 })
+      end
+
       should 'pass options from remove_from_cart to find_cart_item' do
         item = Item.make
         @cart.add_to_cart(item, 1)
@@ -383,7 +395,6 @@ class ActsAsCartTest < ActiveSupport::TestCase
         @cart.expects(:find_cart_item).with(item, { :options => 'value' }).times(2)
         @cart.update_cart(item, 3, { :options => 'value' })
       end
-
     end
 
     context 'add to cart' do

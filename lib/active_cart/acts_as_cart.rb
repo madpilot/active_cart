@@ -74,7 +74,7 @@ module ActiveCart
                 cart_item.quantity += quantity
                 cart_item.save!
               else
-                cart_item = self.send(:cart_items).create!(self.aac_config[:cart_items].to_s.classify.constantize.new_from_item(item, options).attributes.merge(:quantity => quantity, :original_id => item.id, :original_type => item.class.to_s))
+                cart_item = self.send(:cart_items).create!(self.aac_config[:cart_items].to_s.classify.constantize.new_from_item(item, { :quantity => quantity }.merge(options)).attributes.merge(:quantity => quantity, :original_id => item.id, :original_type => item.class.to_s))
               end
               self.reload 
             end
