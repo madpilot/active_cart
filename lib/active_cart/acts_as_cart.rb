@@ -74,7 +74,7 @@ module ActiveCart
                 cart_item.quantity += quantity
                 cart_item.save!
               else
-                cart_item = self.send(:cart_items).create!(self.aac_config[:cart_items].to_s.classify.constantize.new_from_item(item, { :quantity => quantity }.merge(options)).attributes.merge(:quantity => quantity, :original_id => item.id, :original_type => item.class.to_s))
+                cart_item = self.send(:cart_items).create!(self.aac_config[:cart_items].to_s.classify.constantize.new_from_item(item, { :quantity => quantity }.merge(options)).attributes.delete_if {|key, value| value == nil})
               end
               self.reload 
             end
@@ -198,12 +198,11 @@ module ActiveCart
           
           # Creates a new cart_item item for the passed in concrete item
           #
-          # The default copies all the common attributes from the passed in item to new cart_item (Except id). Override it if you want to do something special.
+          # The default copies all the common attributes from the passed in item to new cart_item (Except id and timestamps). Override it if you want to do something special.
           #
           def new_from_item(item, options = {})
-            cart_item = self.new
-            item.class.columns.map {|col| col.name }.each { |col| cart_item.send((col.to_s + "=").to_sym, item.send(col)) if cart_item.respond_to?((col.to_s + "=").to_sym) }
-            cart_item.original = item
+            cart_item = item.send(self.to_s.tableize).build(options)
+            cart_item.attributes.map {|attribute| attribute if cart_item.original.respond_to?(attribute[0].to_s) && !attribute[0].to_s.include?("_at") }.compact.each {|attribute| cart_item.send("#{attribute[0]}=", cart_item.original.send(attribute[0].to_s))}
             # TODO Add a callback
             cart_item
             # TODO Add a callback
