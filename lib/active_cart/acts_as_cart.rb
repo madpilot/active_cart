@@ -202,7 +202,7 @@ module ActiveCart
           #
           def new_from_item(item, options = {})
             cart_item = item.send(self.to_s.tableize).build(options)
-            cart_item.attributes.map {|attribute| attribute if cart_item.original.respond_to?(attribute[0].to_s) && !attribute[0].to_s.include?("_at") }.compact.each {|attribute| cart_item.send("#{attribute[0]}=", cart_item.original.send(attribute[0].to_s))}
+            cart_item.attributes.map {|attribute| attribute if item.respond_to?(attribute[0].to_s) && !attribute[0].to_s.include?("_at") }.compact.each {|attribute| cart_item.send("#{attribute[0]}=", item.send(attribute[0].to_s))}
             # TODO Add a callback
             cart_item
             # TODO Add a callback
