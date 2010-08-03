@@ -11,8 +11,8 @@ class ActsAsCartTest < ActiveSupport::TestCase
       context 'configuration' do
         should 'set defaults' do
           Cart.expects(:aasm_column).with(:state)
-          Cart.expects(:has_many).with(:cart_items)
-          Cart.expects(:has_many).with(:order_totals)
+          Cart.expects(:has_many).with(:cart_items, {:dependent => :destroy})
+          Cart.expects(:has_many).with(:order_totals, {:dependent => :destroy})
          
           Cart.acts_as_cart
 
@@ -26,8 +26,8 @@ class ActsAsCartTest < ActiveSupport::TestCase
         context 'override' do
           should 'change state' do
             Cart.expects(:aasm_column).with(:dummy)
-            Cart.expects(:has_many).with(:cart_items)
-            Cart.expects(:has_many).with(:order_totals)
+            Cart.expects(:has_many).with(:cart_items, {:dependent => :destroy})
+            Cart.expects(:has_many).with(:order_totals, {:dependent => :destroy})
             
             Cart.acts_as_cart :state_column => :dummy
             
@@ -53,8 +53,8 @@ class ActsAsCartTest < ActiveSupport::TestCase
           
           should 'change cart_items' do
             Cart.expects(:aasm_column).with(:state)
-            Cart.expects(:has_many).with(:test)
-            Cart.expects(:has_many).with(:order_totals)
+            Cart.expects(:has_many).with(:test, {:dependent => :destroy})
+            Cart.expects(:has_many).with(:order_totals, {:dependent => :destroy})
             
             Cart.acts_as_cart :cart_items => :test
             
@@ -66,8 +66,8 @@ class ActsAsCartTest < ActiveSupport::TestCase
 
           should 'change order_totals' do
             Cart.expects(:aasm_column).with(:state)
-            Cart.expects(:has_many).with(:cart_items)
-            Cart.expects(:has_many).with(:test)
+            Cart.expects(:has_many).with(:cart_items, {:dependent => :destroy})
+            Cart.expects(:has_many).with(:test, {:dependent => :destroy})
             
             Cart.acts_as_cart :order_totals => :test
             

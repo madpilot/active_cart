@@ -114,8 +114,8 @@ module ActiveCart
          
           aasm_column self.aac_config[:state_column]
 
-          has_many self.aac_config[:cart_items]
-          has_many self.aac_config[:order_totals]
+          has_many self.aac_config[:cart_items], :dependent => :destroy
+          has_many self.aac_config[:order_totals], :dependent => :destroy
 
           extend Forwardable
           def_delegators self.aac_config[:cart_items], :[], :<<, :[]=, :at, :clear, :collect, :map, :delete, :delete_at, :each, :each_index, :empty?, :eql?, :first, :include?, :index, :inject, :last, :length, :pop, :push, :shift, :size, :unshift
