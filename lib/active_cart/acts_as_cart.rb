@@ -33,7 +33,7 @@ module ActiveCart
         #
         #   if session[:cart_id]
         #     engine = Cart.find(session[:cart_id])
-        #     @cart = ActiveCart.new(engine) if engine
+        #     @cart = ActiveCart::Cart.new(engine) if engine
         #   end
         #
         def acts_as_cart(options = {})
