@@ -184,6 +184,8 @@ module ActiveCart
       
       @storage_engine.send("after_#{type}".to_sym, item, quantity, options) if @storage_engine.respond_to?("after_#{type}".to_sym)
       item.send("after_#{type}".to_sym, quantity, options) if item.respond_to?("after_#{type}".to_sym)
+      
+      self
     end
   end
 end
