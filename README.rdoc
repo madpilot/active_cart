@@ -1,4 +1,4 @@
-== ActiveCart [![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+== ActiveCart
 
 ActiveCart is a Shopping Cart framework, it's not a fullyfledged cart, so you will need to do some stuff to get it to work.
 
